@@ -16,10 +16,7 @@ func StartServer(port int) {
 	defer database.CloseConnection(conn)
 
 	productRepository := repositories.MakePgProductRepository(conn)
-	product, err := productRepository.Create(repositories.CreateProductInput{
-		Name:  "Table2",
-		Price: 3000,
-	})
+	product, err := productRepository.FindById(2)
 
 	if err != nil {
 		fmt.Printf("Error while creating product %v\n", err)
