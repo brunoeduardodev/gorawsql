@@ -1,9 +1,11 @@
 package main_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/brunoeduardodev/go-raw-sql/internal/helpers"
+	"github.com/brunoeduardodev/go-raw-sql/internal/services/products"
 )
 
 func TestProducts(t *testing.T) {
@@ -13,10 +15,13 @@ func TestProducts(t *testing.T) {
 			Route:              "products",
 			Method:             "GET",
 			ExpectedStatusCode: 200,
-			TestResponse: func(body helpers.Json) {
-				// if body["products"] != "[]" {
-				// 	t.Errorf("expected empty list of products, but got %s", body["products"])
-				// }
+			TestResponse: func(decoder *json.Decoder) {
+				var response products.ListProductsResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
+
+				if len(response.Products) > 0 {
+					t.Errorf("expected empty list of products, but got %v", response.Products)
+				}
 			},
 		},
 	}

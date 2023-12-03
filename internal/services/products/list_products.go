@@ -7,6 +7,10 @@ import (
 	"github.com/brunoeduardodev/go-raw-sql/repositories"
 )
 
+type ListProductsResponse struct {
+	Products []repositories.Product `json:"products"`
+}
+
 func ListProducts(repository repositories.ProductRepository) helpers.RequestHandler {
 	return func(w http.ResponseWriter, req *http.Request) {
 		products, err := repository.List()
@@ -21,9 +25,11 @@ func ListProducts(repository repositories.ProductRepository) helpers.RequestHand
 			return
 		}
 
-		helpers.SendJson(w, http.StatusOK, helpers.Json{
-			"products": products,
-		})
+		response := ListProductsResponse{
+			Products: *products,
+		}
+
+		helpers.SendJson(w, http.StatusOK, response)
 
 	}
 }

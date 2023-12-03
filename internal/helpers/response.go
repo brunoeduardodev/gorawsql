@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func SendJson(w http.ResponseWriter, status int, response map[string]interface{}) {
+func SendJson(w http.ResponseWriter, status int, response any) {
 	responseStr, err := json.Marshal(response)
 	if err != nil {
 		panic("Unable to write response")

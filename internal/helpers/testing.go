@@ -12,17 +12,17 @@ type RouteTest struct {
 	Method             string
 	Route              string
 	ExpectedStatusCode int
-	TestResponse       func(response Json)
+	TestResponse       func(decoder *json.Decoder)
 }
 
 func RunRoutesTests(t *testing.T, tests []RouteTest) {
 	for _, test := range tests {
-		body := TestRequest(t, test.Route, test.Method, test.ExpectedStatusCode)
-		test.TestResponse(body)
+		bodyDecoder := TestRequest(t, test.Route, test.Method, test.ExpectedStatusCode)
+		test.TestResponse(bodyDecoder)
 	}
 }
 
-func TestRequest(t *testing.T, route string, method string, expectedStatusCode int) Json {
+func TestRequest(t *testing.T, route string, method string, expectedStatusCode int) *json.Decoder {
 	request, err := http.NewRequest(method, fmt.Sprintf("http://localhost:8090/%s", route), http.NoBody)
 	if err != nil {
 		panic(fmt.Sprintf("Unable to create request %v", err))
@@ -38,9 +38,12 @@ func TestRequest(t *testing.T, route string, method string, expectedStatusCode i
 		t.Errorf("expected %d statuscode, but got %d", expectedStatusCode, response.StatusCode)
 	}
 
-	responseBody := make(Json)
-	json.NewDecoder(response.Body).Decode(&responseBody)
-	response.Body.Close()
+	return json.NewDecoder(response.Body)
+}
 
-	return responseBody
+func EnsureResponseDecodesTo(t *testing.T, decoder *json.Decoder, response any) {
+	err := decoder.Decode(&response)
+	if err != nil {
+		t.Errorf("Expected to decode, but got %v", err)
+	}
 }
