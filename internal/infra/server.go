@@ -16,12 +16,14 @@ func StartServer(port int) {
 	defer database.CloseConnection(conn)
 
 	productRepository := repositories.MakePgProductRepository(conn)
-	product, err := productRepository.FindById(2)
+	products, err := productRepository.List()
 
 	if err != nil {
 		fmt.Printf("Error while creating product %v\n", err)
 	} else {
-		fmt.Printf("Product id %d name %s price %d\n", product.Id, product.Name, product.Price)
+		for _, product := range *products {
+			fmt.Printf("Product id %d name %s price %d\n", product.Id, product.Name, product.Price)
+		}
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

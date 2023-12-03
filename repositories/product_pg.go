@@ -36,6 +36,23 @@ func (repository PgProductRepository) Create(input CreateProductInput) (*Product
 	return &Product{Id: id, Name: name, Price: price}, nil
 }
 
+func (repository PgProductRepository) List() (*[]Product, error) {
+	rows, err := repository.conn.Query(context.Background(), "SELECT id, name, price from PRODUCTS")
+	if err != nil {
+		return nil, err
+	}
+
+	products := []Product{}
+
+	for rows.Next() {
+		product := Product{}
+		rows.Scan(&product.Id, &product.Name, &product.Price)
+		products = append(products, product)
+	}
+
+	return &products, nil
+}
+
 func MakePgProductRepository(conn *pgx.Conn) PgProductRepository {
 	return PgProductRepository{conn: conn}
 }
