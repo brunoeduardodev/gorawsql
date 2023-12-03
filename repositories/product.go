@@ -13,9 +13,9 @@ type UpdateProductInput struct {
 }
 
 type Product struct {
-	Id    int
-	Name  string
-	Price int
+	Id    int    `json:"id"`
+	Name  string `json:"name"`
+	Price int    `json:"price"`
 }
 
 func (p Product) ToString() string {
@@ -23,9 +23,9 @@ func (p Product) ToString() string {
 }
 
 type ProductRepository interface {
-	Create(input CreateProductInput) (Product, error)
-	Update(id int, input UpdateProductInput) (Product, error)
+	Create(input CreateProductInput) (*Product, error)
+	Update(id int, input UpdateProductInput) (*Product, error)
 	Delete(id int) error
-	List() ([]Product, error)
-	FindById(id int) (Product, error)
+	List() (*[]Product, error)
+	FindById(id int) (*Product, error)
 }
