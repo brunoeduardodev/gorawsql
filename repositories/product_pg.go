@@ -3,11 +3,11 @@ package repositories
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type PgProductRepository struct {
-	conn *pgx.Conn
+	DB *pgxpool.Pool
 }
 
 func (repository PgProductRepository) FindById(targetId int) (*Product, error) {
@@ -15,7 +15,7 @@ func (repository PgProductRepository) FindById(targetId int) (*Product, error) {
 	var name string
 	var price int
 
-	err := repository.conn.QueryRow(context.Background(), "SELECT id, name, price FROM PRODUCTS WHERE ID = $1", targetId).Scan(&id, &name, &price)
+	err := repository.DB.QueryRow(context.Background(), "SELECT id, name, price FROM PRODUCTS WHERE ID = $1", targetId).Scan(&id, &name, &price)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (repository PgProductRepository) Create(input CreateProductInput) (*Product
 	var name string
 	var price int
 
-	err := repository.conn.QueryRow(context.Background(), "INSERT INTO PRODUCTS (name, price) values ($1, $2) returning id, name, price", input.Name, input.Price).Scan(&id, &name, &price)
+	err := repository.DB.QueryRow(context.Background(), "INSERT INTO PRODUCTS (name, price) values ($1, $2) returning id, name, price", input.Name, input.Price).Scan(&id, &name, &price)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (repository PgProductRepository) Create(input CreateProductInput) (*Product
 }
 
 func (repository PgProductRepository) List() (*[]Product, error) {
-	rows, err := repository.conn.Query(context.Background(), "SELECT id, name, price from PRODUCTS")
+	rows, err := repository.DB.Query(context.Background(), "SELECT id, name, price from PRODUCTS")
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (repository PgProductRepository) List() (*[]Product, error) {
 
 func (repository PgProductRepository) Update(id int, input UpdateProductInput) (*Product, error) {
 	product := Product{}
-	err := repository.conn.QueryRow(context.Background(), "UPDATE PRODUCTS SET NAME=$2, price=$3 WHERE ID = $1 returning id, name, price", id, input.Name, input.Price).Scan(&product.Id, &product.Name, &product.Price)
+	err := repository.DB.QueryRow(context.Background(), "UPDATE PRODUCTS SET NAME=$2, price=$3 WHERE ID = $1 returning id, name, price", id, input.Name, input.Price).Scan(&product.Id, &product.Name, &product.Price)
 
 	if err != nil {
 		return nil, err
@@ -65,10 +65,10 @@ func (repository PgProductRepository) Update(id int, input UpdateProductInput) (
 }
 
 func (repository PgProductRepository) Delete(id int) error {
-	err := repository.conn.QueryRow(context.Background(), "DELETE FROM PRODUCTS WHERE ID = $1", id).Scan()
+	err := repository.DB.QueryRow(context.Background(), "DELETE FROM PRODUCTS WHERE ID = $1", id).Scan()
 	return err
 }
 
-func MakePgProductRepository(conn *pgx.Conn) PgProductRepository {
-	return PgProductRepository{conn: conn}
+func MakePgProductRepository(DB *pgxpool.Pool) PgProductRepository {
+	return PgProductRepository{DB: DB}
 }
