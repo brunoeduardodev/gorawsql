@@ -1,8 +1,18 @@
 package main
 
-import "github.com/brunoeduardodev/go-raw-sql/internal/infra"
+import (
+	"log"
+
+	"github.com/brunoeduardodev/go-raw-sql/internal/infra"
+	"github.com/joho/godotenv"
+)
 
 func main() {
-	infra.StartServer(8090)
+	err := godotenv.Load()
 
+	if err != nil {
+		log.Fatal("Error loading .env file", err)
+	}
+
+	infra.StartServer(8090)
 }

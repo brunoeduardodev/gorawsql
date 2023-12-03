@@ -1,0 +1,13 @@
+# Use postgres/example user/password credentials
+version: "3.1"
+
+services:
+  gorawsqldb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: gorawsql
+    ports:
+      - 5444:5432
