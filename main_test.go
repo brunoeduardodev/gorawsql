@@ -8,7 +8,7 @@ import (
 
 func TestMain(m *testing.M) {
 	go main()
-	time.Sleep(time.Millisecond * 500) // Needed to let server spin up
+	time.Sleep(time.Millisecond * 200) // Needed to let server spin up
 
 	m.Run()
 
