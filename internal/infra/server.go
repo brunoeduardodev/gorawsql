@@ -22,7 +22,7 @@ func StartServer(port int) {
 		fmt.Printf("Error while creating product %v\n", err)
 	} else {
 		for _, product := range *products {
-			fmt.Printf("Product id %d name %s price %d\n", product.Id, product.Name, product.Price)
+			fmt.Println(product.ToString())
 		}
 	}
 
