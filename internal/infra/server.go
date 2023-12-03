@@ -24,7 +24,9 @@ func (A *App) Setup(config AppConfig) {
 
 	productRepository := repositories.MakePgProductRepository(A.DB)
 
-	http.HandleFunc("/products", products.ListProducts(productRepository))
+	http.HandleFunc("/products", products.ProductHandler(productRepository))
+	http.HandleFunc("/products/", products.ProductHandler(productRepository))
+
 	http.HandleFunc("/health", health.HealthHandler)
 }
 

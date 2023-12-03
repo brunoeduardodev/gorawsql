@@ -19,9 +19,19 @@ func SendJson(w http.ResponseWriter, status int, response any) {
 
 type Json map[string]interface{}
 
-func SendError(w http.ResponseWriter, status int, message string, e error) {
-	fmt.Printf("Error: %v\n", e)
-	SendJson(w, status, Json{"error": message})
+type RequestError struct {
+	Message string
+	Status  int
+	Err     error
+}
+
+func SendError(w http.ResponseWriter, err RequestError) {
+	fmt.Printf("Error: %v\n", err.Err)
+	SendJson(w, err.Status, Json{"error": err.Message})
+}
+
+func SendNotFound(w http.ResponseWriter) {
+	w.WriteHeader(404)
 }
 
 type RequestHandler func(w http.ResponseWriter, req *http.Request)
