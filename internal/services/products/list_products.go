@@ -12,12 +12,12 @@ func ListProducts(repository repositories.ProductRepository) helpers.RequestHand
 		products, err := repository.List()
 
 		if err != nil {
-			helpers.SendError(w, http.StatusInternalServerError, "Could not list products.")
+			helpers.SendError(w, http.StatusInternalServerError, "Could not list products.", err)
 			return
 		}
 
 		if err != nil {
-			helpers.SendError(w, http.StatusInternalServerError, "Could not return products.")
+			helpers.SendError(w, http.StatusInternalServerError, "Could not return products.", err)
 			return
 		}
 

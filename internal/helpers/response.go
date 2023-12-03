@@ -19,7 +19,8 @@ func SendJson(w http.ResponseWriter, status int, response map[string]interface{}
 
 type Json map[string]interface{}
 
-func SendError(w http.ResponseWriter, status int, message string) {
+func SendError(w http.ResponseWriter, status int, message string, e error) {
+	fmt.Printf("Error: %v\n", e)
 	SendJson(w, status, Json{"error": message})
 }
 

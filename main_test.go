@@ -1,15 +1,27 @@
 package main
 
 import (
+	"log"
 	"os"
 	"testing"
-	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func TestMain(m *testing.M) {
-	go main()
-	time.Sleep(time.Millisecond * 200) // Needed to let server spin up
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file", err)
+	}
+
+	app := App{}
+
+	app.Setup(AppConfig{
+		databaseUrl: os.Getenv("DATABASE_URL"),
+	})
+
+	go app.Run(8090)
 	m.Run()
 
 	os.Interrupt.Signal()
