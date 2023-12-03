@@ -16,7 +16,7 @@ func main() {
 
 	app := infra.App{}
 	app.Setup(infra.AppConfig{
-		DatabaseUrl: os.Getenv("DATABASE_URL"),
+		DatabaseUrl: os.Getenv("DATABASE_URL_TEST"),
 	})
 
 	app.Run(8090)

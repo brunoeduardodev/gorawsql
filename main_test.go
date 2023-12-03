@@ -28,14 +28,13 @@ func ensureTableExists() {
 }
 
 func TestMain(m *testing.M) {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file", err)
 	}
 
 	app.Setup(infra.AppConfig{
-		DatabaseUrl: os.Getenv("DATABASE_URL"),
+		DatabaseUrl: os.Getenv("DATABASE_URL_TEST"),
 	})
 
 	ensureTableExists()
