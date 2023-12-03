@@ -11,14 +11,15 @@ type UpdateProductInput struct {
 }
 
 type Product struct {
-	Id    string
+	Id    int
 	Name  string
 	Price int
 }
 
 type ProductRepository interface {
-	Create(input CreateProductInput) Product
-	Update(id string, input UpdateProductInput) Product
-	Delete(id string) bool
-	List() []Product
+	Create(input CreateProductInput) (Product, error)
+	Update(id int, input UpdateProductInput) (Product, error)
+	Delete(id int) error
+	List() ([]Product, error)
+	FindById(id int) (Product, error)
 }

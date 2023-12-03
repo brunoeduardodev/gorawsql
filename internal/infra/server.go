@@ -1,13 +1,12 @@
 package infra
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/brunoeduardodev/go-raw-sql/internal/infra/database"
 	"github.com/brunoeduardodev/go-raw-sql/internal/services/health"
+	"github.com/brunoeduardodev/go-raw-sql/repositories"
 )
 
 func StartServer(port int) {
@@ -16,25 +15,21 @@ func StartServer(port int) {
 	conn := database.GetConnection()
 	defer database.CloseConnection(conn)
 
-	var id int
-	var name string
-	var price int
+	productRepository := repositories.MakePgProductRepository(conn)
+	product, err := productRepository.Create(repositories.CreateProductInput{
+		Name:  "Table2",
+		Price: 3000,
+	})
 
-	err := conn.QueryRow(context.Background(), "SELECT id, name, price FROM PRODUCTS").Scan(&id, &name, &price)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		os.Exit(1)
+		fmt.Printf("Error while creating product %v\n", err)
+	} else {
+		fmt.Printf("Product id %d name %s price %d\n", product.Id, product.Name, product.Price)
 	}
-
-	fmt.Printf("ID=%d Name=%s Price=%d\n", id, name, price)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Reached here!\n")
 	})
 
-	fmt.Println("Started server!")
-
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
-
-	fmt.Println("Stopped server!")
 }
