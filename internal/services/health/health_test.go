@@ -1,19 +1,14 @@
-package main
+package health_test
 
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"testing"
-	"time"
 
 	"github.com/brunoeduardodev/go-raw-sql/internal/helpers"
 )
 
 func TestHealthCheck(t *testing.T) {
-	go main()
-
-	time.Sleep(time.Millisecond * 500) // Needed to let server spin up
 	response, err := http.Get("http://localhost:8090/health")
 
 	if err != nil {
@@ -31,6 +26,4 @@ func TestHealthCheck(t *testing.T) {
 	if responseBody["message"] != "Service is up and running" {
 		t.Errorf("expected message to be \"Service is up and running\", but got %v", responseBody["message"])
 	}
-
-	os.Interrupt.Signal()
 }
