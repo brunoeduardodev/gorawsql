@@ -16,10 +16,22 @@ func StartServer(port int) {
 	defer database.CloseConnection(conn)
 
 	productRepository := repositories.MakePgProductRepository(conn)
+
+	product, err := productRepository.Update(1, repositories.UpdateProductInput{
+		Name:  "New Name",
+		Price: 3333,
+	})
+
+	if err != nil {
+		fmt.Printf("Error while updating product %v\n", err)
+	} else {
+		fmt.Println(product.ToString())
+	}
+
 	products, err := productRepository.List()
 
 	if err != nil {
-		fmt.Printf("Error while creating product %v\n", err)
+		fmt.Printf("Error while listing product %v\n", err)
 	} else {
 		for _, product := range *products {
 			fmt.Println(product.ToString())

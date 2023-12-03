@@ -53,6 +53,17 @@ func (repository PgProductRepository) List() (*[]Product, error) {
 	return &products, nil
 }
 
+func (repository PgProductRepository) Update(id int, input UpdateProductInput) (*Product, error) {
+	product := Product{}
+	err := repository.conn.QueryRow(context.Background(), "UPDATE PRODUCTS SET NAME=$2, price=$3 WHERE ID = $1 returning id, name, price", id, input.Name, input.Price).Scan(&product.Id, &product.Name, &product.Price)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &product, nil
+}
+
 func MakePgProductRepository(conn *pgx.Conn) PgProductRepository {
 	return PgProductRepository{conn: conn}
 }
