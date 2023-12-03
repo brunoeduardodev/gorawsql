@@ -17,15 +17,12 @@ func StartServer(port int) {
 
 	productRepository := repositories.MakePgProductRepository(conn)
 
-	product, err := productRepository.Update(1, repositories.UpdateProductInput{
-		Name:  "New Name",
-		Price: 3333,
-	})
+	err := productRepository.Delete(1)
 
 	if err != nil {
-		fmt.Printf("Error while updating product %v\n", err)
+		fmt.Printf("Error while deleting product %v\n", err)
 	} else {
-		fmt.Println(product.ToString())
+		fmt.Println("Product deleted")
 	}
 
 	products, err := productRepository.List()

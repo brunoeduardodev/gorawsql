@@ -64,6 +64,11 @@ func (repository PgProductRepository) Update(id int, input UpdateProductInput) (
 	return &product, nil
 }
 
+func (repository PgProductRepository) Delete(id int) error {
+	err := repository.conn.QueryRow(context.Background(), "DELETE FROM PRODUCTS WHERE ID = $1", id).Scan()
+	return err
+}
+
 func MakePgProductRepository(conn *pgx.Conn) PgProductRepository {
 	return PgProductRepository{conn: conn}
 }
