@@ -7,8 +7,28 @@ import (
 	"testing"
 )
 
-func TestGetRequest(t *testing.T, route string, expectedStatusCode int) Json {
-	response, err := http.Get(fmt.Sprintf("http://localhost:8090/%s", route))
+type RouteTest struct {
+	Name               string
+	Method             string
+	Route              string
+	ExpectedStatusCode int
+	TestResponse       func(response Json)
+}
+
+func RunRoutesTests(t *testing.T, tests []RouteTest) {
+	for _, test := range tests {
+		body := TestRequest(t, test.Route, test.Method, test.ExpectedStatusCode)
+		test.TestResponse(body)
+	}
+}
+
+func TestRequest(t *testing.T, route string, method string, expectedStatusCode int) Json {
+	request, err := http.NewRequest(method, fmt.Sprintf("http://localhost:8090/%s", route), http.NoBody)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to create request %v", err))
+	}
+
+	response, err := http.DefaultClient.Do(request)
 
 	if err != nil {
 		t.Errorf("expected no errors, but got %v", err)
