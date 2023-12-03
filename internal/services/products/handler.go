@@ -9,10 +9,6 @@ import (
 	"github.com/brunoeduardodev/go-raw-sql/repositories"
 )
 
-type ListProductsResponse struct {
-	Products []repositories.Product `json:"products"`
-}
-
 func ProductHandler(repository repositories.ProductRepository) helpers.RequestHandler {
 	return func(w http.ResponseWriter, req *http.Request) {
 		switch req.Method {
@@ -48,40 +44,4 @@ func ProductHandler(repository repositories.ProductRepository) helpers.RequestHa
 		}
 
 	}
-}
-
-func ListProducts(repository repositories.ProductRepository) (*ListProductsResponse, *helpers.RequestError) {
-	products, err := repository.List()
-
-	if err != nil {
-		return nil, &helpers.RequestError{
-			Err:     err,
-			Message: "Could not list products",
-			Status:  503,
-		}
-	}
-
-	response := ListProductsResponse{
-		Products: *products,
-	}
-
-	return &response, nil
-}
-
-type FindProductByIdResponse struct {
-	Product repositories.Product `json:"product"`
-}
-
-func FindProductById(repository repositories.ProductRepository, id int) (*FindProductByIdResponse, *helpers.RequestError) {
-	product, err := repository.FindById(id)
-
-	if err != nil {
-		return nil, &helpers.RequestError{
-			Message: "Product not found",
-			Status:  400,
-			Err:     err,
-		}
-	}
-
-	return &FindProductByIdResponse{Product: *product}, nil
 }
