@@ -3,13 +3,13 @@ package repositories
 import "fmt"
 
 type CreateProductInput struct {
-	Name  string
-	Price int
+	Name  string `json:"name"`
+	Price int    `json:"price"`
 }
 
 type UpdateProductInput struct {
-	Name  string
-	Price int
+	Name  string `json:"name"`
+	Price int    `json:"price"`
 }
 
 type Product struct {

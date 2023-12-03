@@ -7,7 +7,7 @@ import (
 )
 
 func HealthHandler(w http.ResponseWriter, req *http.Request) {
-	helpers.SendJson(w, http.StatusAccepted, helpers.Json{
-		"ok": true,
+	helpers.SendJson(w, http.StatusOK, helpers.Json{
+		"message": "Service is up and running",
 	})
 }
