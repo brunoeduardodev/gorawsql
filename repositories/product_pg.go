@@ -65,7 +65,8 @@ func (repository PgProductRepository) Update(id int, input UpdateProductInput) (
 }
 
 func (repository PgProductRepository) Delete(id int) error {
-	err := repository.DB.QueryRow(context.Background(), "DELETE FROM PRODUCTS WHERE ID = $1", id).Scan()
+	var resultId string
+	err := repository.DB.QueryRow(context.Background(), "DELETE FROM PRODUCTS WHERE ID = $1 returning id", id).Scan(&resultId)
 	return err
 }
 
