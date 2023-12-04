@@ -65,6 +65,39 @@ func ProductHandler(repository repositories.ProductRepository) helpers.RequestHa
 
 			helpers.SendJson(w, 200, response)
 			return
+		case "PUT":
+			segments := strings.Split(req.URL.Path, "/")[2:]
+			if len(segments) != 1 {
+				http.NotFound(w, req)
+				return
+			}
+
+			id, err := strconv.Atoi(segments[0])
+			if err != nil {
+				helpers.SendNotFound(w)
+				return
+			}
+
+			var input repositories.UpdateProductInput
+			err = json.NewDecoder(req.Body).Decode(&input)
+
+			if err != nil {
+				helpers.SendError(w, helpers.RequestError{
+					Message: "Invalid request body",
+					Status:  400,
+					Err:     err,
+				})
+				return
+			}
+
+			response, requestError := UpdateProduct(repository, id, input)
+			if requestError != nil {
+				helpers.SendError(w, *requestError)
+				return
+			}
+
+			helpers.SendJson(w, 200, response)
+			return
 
 		default:
 			helpers.SendNotFound(w)
