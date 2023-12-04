@@ -78,7 +78,46 @@ func TestProducts(t *testing.T) {
 				if response.Product.Name != "Product 1" {
 					t.Errorf("Expected to receive a product with name \"Product 1\", but got %s", response.Product.Name)
 				}
+			},
+		},
+		{
+			Name:               "Should be able to update product",
+			Method:             "PUT",
+			Route:              "products/1",
+			ExpectedStatusCode: 200,
+			Body: repositories.UpdateProductInput{
+				Name:  "Updated 1",
+				Price: 10000,
+			},
+			TestResponse: func(decoder *json.Decoder) {
+				var response products.UpdateProductResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
 
+				if response.Product.Id != 1 {
+					t.Errorf("Expected to find product with id 1 but got %d", response.Product.Id)
+				}
+
+				if response.Product.Name != "Updated 1" {
+					t.Errorf("Expected to receive a product with name \"Updated 1\", but got %s", response.Product.Name)
+				}
+			},
+		},
+		{
+			Name:               "Should be able to retrieve product with updated name",
+			Method:             "GET",
+			Route:              "products/1",
+			ExpectedStatusCode: 200,
+			TestResponse: func(decoder *json.Decoder) {
+				var response products.FindProductByIdResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
+
+				if response.Product.Id != 1 {
+					t.Errorf("Expected to find product with id 1 but got %d", response.Product.Id)
+				}
+
+				if response.Product.Name != "Updated 1" {
+					t.Errorf("Expected to receive a product with name \"Updated 1\", but got %s", response.Product.Name)
+				}
 			},
 		},
 	}
