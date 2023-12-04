@@ -1,6 +1,7 @@
 package products
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -39,6 +40,27 @@ func ProductHandler(repository repositories.ProductRepository) helpers.RequestHa
 
 			helpers.SendJson(w, 200, response)
 			return
+		case "POST":
+			input := repositories.CreateProductInput{}
+			err := json.NewDecoder(req.Body).Decode(&input)
+
+			if err != nil {
+				helpers.SendError(w, helpers.RequestError{
+					Message: "Invalid request body",
+					Status:  400,
+					Err:     err,
+				})
+			}
+
+			response, responseError := CreateProduct(repository, input)
+			if responseError != nil {
+				helpers.SendError(w, *responseError)
+				return
+			}
+
+			helpers.SendJson(w, 200, response)
+			return
+
 		default:
 			helpers.SendNotFound(w)
 		}
