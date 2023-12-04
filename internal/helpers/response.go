@@ -35,3 +35,7 @@ func SendNotFound(w http.ResponseWriter) {
 }
 
 type RequestHandler func(w http.ResponseWriter, req *http.Request)
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}

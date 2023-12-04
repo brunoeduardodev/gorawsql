@@ -120,6 +120,36 @@ func TestProducts(t *testing.T) {
 				}
 			},
 		},
+		{
+			Name:               "Should be able to delete product",
+			Method:             "DELETE",
+			Route:              "products/1",
+			ExpectedStatusCode: 200,
+			TestResponse: func(decoder *json.Decoder) {
+				var response products.DeleteProductResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
+
+				if !response.Deleted {
+					t.Errorf("Expected to receive \"deleted\": true, but got %v", response.Deleted)
+				}
+			},
+		},
+		{
+			Name:               "Should not be able to find product after deletion ",
+			Method:             "GET",
+			Route:              "products/1",
+			ExpectedStatusCode: 400,
+			TestResponse: func(decoder *json.Decoder) {
+				var response helpers.ErrorResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
+
+				if response.Error != "Product not found" {
+					t.Errorf("Expected to receive \"error\": \"Product not found\", but got %v", response.Error)
+
+				}
+
+			},
+		},
 	}
 
 	helpers.RunRoutesTests(t, tests)
