@@ -17,12 +17,14 @@ func ProductHandler(repository repositories.ProductRepository) helpers.RequestHa
 			segments := strings.Split(req.URL.Path, "/")[2:]
 			if len(segments) > 1 {
 				http.NotFound(w, req)
+				return
 			}
 
 			if len(segments) == 0 {
 				response, err := ListProducts(repository)
 				if err != nil {
 					helpers.SendError(w, *err)
+					return
 				}
 				helpers.SendJson(w, 200, response)
 				return
@@ -31,11 +33,13 @@ func ProductHandler(repository repositories.ProductRepository) helpers.RequestHa
 			id, convError := strconv.Atoi(segments[0])
 			if convError != nil {
 				helpers.SendNotFound(w)
+				return
 			}
 
 			response, err := FindProductById(repository, id)
 			if err != nil {
 				helpers.SendError(w, *err)
+				return
 			}
 
 			helpers.SendJson(w, 200, response)
@@ -50,6 +54,7 @@ func ProductHandler(repository repositories.ProductRepository) helpers.RequestHa
 					Status:  400,
 					Err:     err,
 				})
+				return
 			}
 
 			response, responseError := CreateProduct(repository, input)
