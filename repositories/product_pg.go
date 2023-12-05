@@ -36,7 +36,7 @@ func (repository PgProductRepository) Create(input CreateProductInput) (*Product
 	return &Product{Id: id, Name: name, Price: price}, nil
 }
 
-func (repository PgProductRepository) List() (*[]Product, error) {
+func (repository PgProductRepository) List(input ListProductsInput) (*[]Product, error) {
 	rows, err := repository.DB.Query(context.Background(), "SELECT id, name, price from PRODUCTS")
 	if err != nil {
 		return nil, err
