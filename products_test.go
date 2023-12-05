@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func TestProducts(t *testing.T) {
-	tests := []helpers.RouteTest{
+	tests_a := []helpers.RouteTest{
 		{
 			Name:               "Should return empty list without products",
 			Route:              "products",
@@ -152,6 +153,56 @@ func TestProducts(t *testing.T) {
 		},
 	}
 
-	helpers.RunRoutesTests(t, tests)
+	helpers.RunRoutesTests(t, tests_a)
 
+	app.DB.Exec(context.Background(), "INSERT INTO PRODUCTS (name, price) VALUES ('Notebook', 50000), ('Chair', 3000), ('Phone', 4000), ('Bed', 40000), ('Double Bed', 80000), ('Gamer Notebook', 999999), ('King sized bed', 9999);")
+
+	tests_b := []helpers.RouteTest{
+		{
+			Name:               "Should be able to return seven products after seeding",
+			Method:             "GET",
+			Route:              "products",
+			ExpectedStatusCode: 200,
+			TestResponse: func(decoder *json.Decoder) {
+				var response products.ListProductsResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
+
+				if len(response.Products) != 7 {
+					t.Errorf("Expected to receive 7 products, but got %d", len(response.Products))
+				}
+			},
+		},
+		{
+			Name:               "Should be able to search products (Test 1)",
+			Method:             "GET",
+			Route:              "products?q=bed",
+			ExpectedStatusCode: 200,
+			TestResponse: func(decoder *json.Decoder) {
+				var response products.ListProductsResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
+
+				if len(response.Products) != 3 {
+					t.Errorf("Expected to receive 3 products, but got %d", len(response.Products))
+				}
+
+			},
+		},
+		{
+			Name:               "Should be able to search products (Test 2)",
+			Method:             "GET",
+			Route:              "products?q=notebook",
+			ExpectedStatusCode: 200,
+			TestResponse: func(decoder *json.Decoder) {
+				var response products.ListProductsResponse
+				helpers.EnsureResponseDecodesTo(t, decoder, &response)
+
+				if len(response.Products) != 2 {
+					t.Errorf("Expected to receive 2 products, but got %d", len(response.Products))
+				}
+
+			},
+		},
+	}
+
+	helpers.RunRoutesTests(t, tests_b)
 }
