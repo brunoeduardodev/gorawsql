@@ -2,7 +2,10 @@ package repositories
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -36,8 +39,26 @@ func (repository PgProductRepository) Create(input CreateProductInput) (*Product
 	return &Product{Id: id, Name: name, Price: price}, nil
 }
 
+func listProducts(db *pgxpool.Pool) (pgx.Rows, error) {
+	return db.Query(context.Background(), "SELECT id, name, price from PRODUCTS")
+}
+
+func listProductsWithSearch(db *pgxpool.Pool, search string) (pgx.Rows, error) {
+	parsedSearch := fmt.Sprintf("%%%s%%", strings.ToLower(search))
+
+	return db.Query(context.Background(), "SELECT id, name, price from PRODUCTS WHERE LOWER(name) LIKE $1", parsedSearch)
+}
+
 func (repository PgProductRepository) List(input ListProductsInput) (*[]Product, error) {
-	rows, err := repository.DB.Query(context.Background(), "SELECT id, name, price from PRODUCTS")
+	var rows pgx.Rows
+	var err error
+
+	if input.Query == "" {
+		rows, err = listProducts(repository.DB)
+	} else {
+		rows, err = listProductsWithSearch(repository.DB, input.Query)
+	}
+
 	if err != nil {
 		return nil, err
 	}
