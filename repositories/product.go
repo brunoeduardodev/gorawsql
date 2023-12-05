@@ -12,6 +12,10 @@ type UpdateProductInput struct {
 	Price int    `json:"price"`
 }
 
+type ListProductsInput struct {
+	Query string `json:"query"`
+}
+
 type Product struct {
 	Id    int    `json:"id"`
 	Name  string `json:"name"`
@@ -26,6 +30,6 @@ type ProductRepository interface {
 	Create(input CreateProductInput) (*Product, error)
 	Update(id int, input UpdateProductInput) (*Product, error)
 	Delete(id int) error
-	List() (*[]Product, error)
+	List(input ListProductsInput) (*[]Product, error)
 	FindById(id int) (*Product, error)
 }

@@ -9,8 +9,8 @@ type ListProductsResponse struct {
 	Products []repositories.Product `json:"products"`
 }
 
-func ListProducts(repository repositories.ProductRepository) (*ListProductsResponse, *helpers.RequestError) {
-	products, err := repository.List()
+func ListProducts(repository repositories.ProductRepository, input repositories.ListProductsInput) (*ListProductsResponse, *helpers.RequestError) {
+	products, err := repository.List(input)
 
 	if err != nil {
 		return nil, &helpers.RequestError{

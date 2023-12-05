@@ -36,7 +36,9 @@ func ProductHandler(repository repositories.ProductRepository) helpers.RequestHa
 			}
 
 			if len(segments) == 0 {
-				response, err := ListProducts(repository)
+				query := req.URL.Query().Get("q")
+
+				response, err := ListProducts(repository, repositories.ListProductsInput{Query: query})
 				if err != nil {
 					helpers.SendError(w, *err)
 					return
